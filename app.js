@@ -1,6 +1,6 @@
 const container = document.getElementById('root');
 const ajax = new XMLHttpRequest();
-const content = document.createElement('div');
+const content = document.createElement('div');//
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json';//@id값의 주소 
 
@@ -11,9 +11,11 @@ ajax.send();
 const newsFeed = JSON.parse(ajax.response);//객체로 바꾸기 
 const ul = document.createElement('ul');
 
-window.addEventListener('hashchange', function() {
-  const id = location.hash.substr(1);//location 객체ㅔ 해시라는 속성으로 데이터 넘겨줌
+window.addEventListener('hashchange', function() {//이벤트 hashchange라는 함수 실행 
+  const id = location.hash.substr(1);//location 객체해시라는 속성으로 데이터 넘겨줌
+  //substr() 쓰고싶은 위치값
 
+  //replace() 값대체하기 
   ajax.open('GET', CONTENT_URL.replace('@id', id), false);//@id
   ajax.send();
 
@@ -22,7 +24,7 @@ window.addEventListener('hashchange', function() {
 
   title.innerHTML = newsContent.title;
 
-  content.appendChild(title);
+  content.appendChild(title);//div 안에 자식요소로 title
 });
 
 for(let i = 0; i < 10; i++) {
@@ -36,5 +38,6 @@ for(let i = 0; i < 10; i++) {
   ul.appendChild(li);//ul 태그안에 자식요소 li태그 넣기
 }
 
+//root라는 div 안에 넣기  
 container.appendChild(ul);
-container.appendChild(content);
+container.appendChild(content);s
