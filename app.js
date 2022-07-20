@@ -15,42 +15,57 @@ function getData(url) { //결괏값이 다르기 때문에 입력은 url이라�
   return JSON.parse(ajax.response);
 }
 
+function newsFeed() {
 //getData(url) 넘겨주기 
 const newsFeed = getData(NEWS_URL);
+const newsList = [];
 
-
-
-const ul = document.createElement('ul');
-
-window.addEventListener('hashchange', function () { //이벤트 hashchange라는 함수 실행 
-  const id = location.hash.substr(1); //location 객체해시라는 속성으로 데이터 넘겨줌
-  //substr() 쓰고싶은 위치값
-
-
-  const newsContent = getData(CONTENT_URL.replace('@id', id))
-  const title = document.createElement('h1');
-
-  title.innerHTML = newsContent.title;
-
-  content.appendChild(title); //div 안에 자식요소로 title
-});
-
-for (let i = 0; i < 10; i++) {
-  //li와 a태그를 자식 요소로 담을 수 있는  innerHTML속성을 제공할 DOM
-  const div = document.createElement('div');
-  div.innerHTML = `
-    <li>
-      <a href="#${newsFeed[i].id}">
-        ${newsFeed[i].title} (${newsFeed[i].comments_count})
-      </a>
-    </li>
-  `;
-  //div태그 안에 li태그만 사용 
-  //첫번째자식요소 firstElementChild속성
-  ul.appendChild(div.firstElementChild);
+  newsList.push('<ul>');
+  //목록화면
+  for(let i = 0; i < 10; i++) {
+    newsList.push(`
+      <li>
+        <a href="#${newsFeed[i].id}">
+          ${newsFeed[i].title} (${newsFeed[i].comments_count})
+        </a>
+      </li>
+    `);
+  }
+  
+  newsList.push('</ul>');
+  
+  container.innerHTML = newsList.join('');
 }
 
-//root라는 div 안에 넣기  
-container.appendChild(ul);
-container.appendChild(content);
-s
+function newsDetail() { //이벤트 hashchange라는 함수 실행 
+  const id = location.hash.substr(1); //location 객체해시라는 속성으로 데이터 넘겨줌
+  //substr() 쓰고싶은 위치값
+  const newsContent = getData(CONTENT_URL.replace('@id', id))
+
+  //문자열 처리방식
+  container.innerHTML = `
+    <h1>${newsContent.title}</h1>
+
+    <div>
+      <a href="#">목록으로</a>
+    </div>
+  `;
+}
+
+//화면이 전환해야할때 판단하여 해당화는 화면으로 전환
+function router() {
+// hash값 전제 가져오기 
+  const routePath = location.hash;
+
+  if (routePath === '') {//첫 진입일땐 뉴스피드
+    newsFeed();
+  } else {//뉴스목록 
+    newsDetail();
+  }
+}
+//화면의 전환 
+window.addEventListener('hashchange', router);
+
+
+//함수 호출 
+router();
