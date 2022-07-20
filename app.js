@@ -4,6 +4,13 @@ const content = document.createElement('div'); //
 const NEWS_URL = 'https://api.hnpwa.com/v0/news/1.json';
 const CONTENT_URL = 'https://api.hnpwa.com/v0/item/@id.json'; //@id값의 주소 
 
+//페이징구현 
+//페이지말고 다른 것도 생길수 있기 때문에 객체만듬
+const store = {//시작페이지 
+  currentPage: 1,
+};
+
+
 //중복되는 또는 반복되는 코드 하나로 만드는 방법!!!!! 
 
 //코드반복 제거 ->함수로 만들기(코드를 묶는 단위)
@@ -21,8 +28,9 @@ const newsFeed = getData(NEWS_URL);
 const newsList = [];
 
   newsList.push('<ul>');
-  //목록화면
-  for(let i = 0; i < 10; i++) {
+  //목록화면 페이징처리 
+  //시작값을 1페이지일 땐 0이여야하므로 -1 ;
+  for(let i = (store.currentPage - 1) * 10; i < store.currentPage * 10; i++) {
     newsList.push(`
       <li>
         <a href="#${newsFeed[i].id}">
@@ -33,12 +41,18 @@ const newsList = [];
   }
   
   newsList.push('</ul>');
-  
+  //네비게이션 ui 만들기
+  newsList.push(`
+    <div>
+      <a href="#/page/${store.currentPage > 1 ? store.currentPage - 1 : 1}">이전 페이지</a>
+      <a href="#/page/${store.currentPage + 1}">다음 페이지</a>
+    </div>
+  `);
   container.innerHTML = newsList.join('');
 }
 
 function newsDetail() { //이벤트 hashchange라는 함수 실행 
-  const id = location.hash.substr(1); //location 객체해시라는 속성으로 데이터 넘겨줌
+  const id = location.hash.substr(7); //location 객체해시라는 속성으로 데이터 넘겨줌
   //substr() 쓰고싶은 위치값
   const newsContent = getData(CONTENT_URL.replace('@id', id))
 
@@ -58,6 +72,12 @@ function router() {
   const routePath = location.hash;
 
   if (routePath === '') {//첫 진입일땐 뉴스피드
+    newsFeed();
+  } else if (routePath.indexOf('#/page/') >= 0) {//구분하는 구조 
+    //입력으로 주어지는 문자열을 찾아서 있다면 0이상 없다면 -1 
+
+    //추출 문자열에서 페이지의 숫자값 (문자열을 숫자로) 
+    store.currentPage = Number(routePath.substr(7));
     newsFeed();
   } else {//뉴스목록 
     newsDetail();
